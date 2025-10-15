@@ -1,0 +1,39 @@
+<% if session[:login_uid] %>
+  <h2>新しいツイート</h2>
+  <%= form_with model: Tweet.new, url: tweets_path, local: true do |f| %>
+    <div>
+      <%= f.text_area :message, placeholder: "いまどうしてる？", rows: 3 %>
+    </div>
+    <div>
+      <%= f.submit "ツイートする" %>
+    </div>
+  <% end %>
+  
+  <p><%= link_to 'ログアウト', top_logout_path %></p>
+<% else %>
+  <h2>ログインまたはユーザー登録</h2>
+  <%# ログインフォームや登録リンクを配置 %>
+  <%# render 'top/login_form' など %>
+<% end %>
+
+<hr>
+
+<h2>ツイート一覧</h2>
+<% @tweets.each do |tweet| %>
+  <p>
+    <strong><%= tweet.user&.uid || '削除済みユーザー' %>:</strong>
+    <%= tweet.message %>
+    (いいね: <%= tweet.likes.count %>件)
+    
+    <% if session[:login_uid] %>
+      <%# いいねリンク %>
+      <%= link_to 'いいね', likes_path(tweet_id: tweet.id), data: { turbo_method: :post } %>
+      
+      <%# いいね削除リンク %>
+      <% like = tweet.likes.find_by(user_id: User.find_by(uid: session[:login_uid]).id) %>
+<% if like %>
+  <%= link_to 'いいね削除', like_path(like), data: { turbo_method: :delete } %>
+<% end %>
+    <% end %>
+  </p>
+<% end %>

@@ -1,0 +1,25 @@
+<h2>ログイン</h2>
+
+<% if flash[:notice] %>
+  <p style="color: red;"><%= flash[:notice] %></p>
+<% end %>
+
+<%# form_with の url: に top_login_path を指定し、POST メソッドで送信 %>
+<%= form_with url: top_login_path, method: :post do |form| %>
+  <div>
+    <%= form.label :uid, "ユーザーID" %>
+    <%= form.text_field :uid %>
+  </div>
+  <div>
+    <%= form.label :pass, "パスワード" %>
+    <%= form.password_field :pass %>
+  </div>
+  <div>
+    <%= form.submit "ログイン" %>
+  </div>
+<% end %>
+
+<p>
+  ユーザー登録はこちらから：
+  <%= link_to '新規登録', new_user_path %>
+</p>

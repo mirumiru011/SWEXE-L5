@@ -1,0 +1,31 @@
+<% @tweets.each do |e| %>
+
+    <%= e.message %>
+
+    <%= e.like_users.count %>
+
+    <%= link_to '削除', tweet_path(e), data: {turbo_method: :delete} %>
+
+   
+
+    <% if session[:login_uid] %>
+
+        <%= link_to 'いいね', likes_path(tweet_id: e.id), data: { turbo_method: :post } %>
+
+        <%= link_to 'いいね削除', like_path(e), data: { turbo_method: :delete } %>
+
+    <% end %>
+
+<br>
+
+<% end %>
+
+
+
+<%= link_to "新規追加", new_tweet_path %><br>
+
+<%= link_to "ログイン", top_main_path %><br>
+
+<%= link_to "ログアウト", top_logout_path %><br>
+
+ログイン中UID：<%= session[:login_uid] %>
