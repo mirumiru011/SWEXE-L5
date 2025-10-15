@@ -29,8 +29,8 @@ production:
     adapter: postgresql
     encoding: unicode
     pool: 5
-    database: mysite_ic21
-    username: mysite_ic21_user
+    database: mysite_irjc
+    username: mysite_irjc_user
     password: <%= ENV['MYSITE_DATABASE_PASSWORD'] %>
     url: <%= ENV['DATABASE_URL'] %>
   cache:
