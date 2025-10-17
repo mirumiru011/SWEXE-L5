@@ -10,12 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_15_080257) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_17_075025) do
   create_table "likes", force: :cascade do |t|
     t.integer "user_id"
     t.integer "tweet_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "profiles", force: :cascade do |t|
+    t.text "introduction"
+    t.string "location"
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_profiles_on_user_id"
   end
 
   create_table "tweets", force: :cascade do |t|
@@ -32,4 +41,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_080257) do
     t.datetime "updated_at", null: false
     t.string "password_digest"
   end
+
+  add_foreign_key "profiles", "users"
 end

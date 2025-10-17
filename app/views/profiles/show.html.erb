@@ -1,0 +1,10 @@
+<h2><%= @profile.user.uid %> のプロフィール</h2>
+
+<p><strong>自己紹介:</strong> <%= @profile.introduction %></p>
+<p><strong>拠点:</strong> <%= @profile.location %></p>
+
+<% if @profile.user == current_user %>
+  <%= link_to 'プロフィールを編集', edit_profile_path(@profile) %>
+<% end %>
+
+<%= link_to 'ツイート一覧へ戻る', root_path %>

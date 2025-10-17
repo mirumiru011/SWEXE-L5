@@ -1,35 +1,29 @@
 class TopController < ApplicationController
-  # ツイート一覧表示とログインフォームの表示
+  # ツイート一覧表示
   def main
-    # すべてのツイートを取得
     @tweets = Tweet.all.order(created_at: :desc) 
-    
-    # ログインしていない場合は、ログインフォームを表示する
-    unless session[:login_uid]
-      # ログインフォームは top/login_form.html.erb などに作成し、renderで表示する
-      # ファイルがない場合はエラーになるので注意
-      render :login_form
-    end
-    # ログインしている場合は、main.html.erb（ツイート一覧）がそのまま表示される
+  end
+
+  # ログインフォーム表示用の新しいアクション
+  def login_form
+
   end
 
   # ログイン処理
-def login
-  user = User.find_by(uid: params[:uid])
-  if user && user.authenticate(params[:pass]) # 🔥 BCrypt認証
-    session[:login_uid] = user.uid
-    redirect_to root_path
-  else
-    flash.now[:notice] = "ユーザーIDまたはパスワードが違います"
-    render :login_form
+  def login
+    user = User.find_by(uid: params[:uid])
+    if user && user.authenticate(params[:pass]) 
+      session[:login_uid] = user.uid
+      redirect_to root_path, notice: "ログインしました。" # ログイン成功メッセージを追加
+    else
+      flash.now[:alert] = "ユーザーIDまたはパスワードが違います" # noticeをalertに変更して強調
+      render :login_form, status: :unprocessable_entity # ログイン失敗時は login_form テンプレートを再表示
+    end
   end
-end
 
   # ログアウト処理
   def logout
-    # セッションからユーザーID情報を削除
     session.delete(:login_uid)
-    # トップページへリダイレクト
-    redirect_to root_path
+    redirect_to root_path, notice: "ログアウトしました。" # ログアウト成功メッセージを追加
   end
 end

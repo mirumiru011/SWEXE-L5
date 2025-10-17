@@ -1,25 +1,16 @@
 Rails.application.routes.draw do
+  get "top/main"
+  get "top/logout"
   
-  # トップページの設定（最初に処理されるべき）
+  get "top/login_form", as: 'top_login_form'
+  post 'top/login', to: 'top#login', as: 'top_login' 
+
   root 'top#main'
-  
-  # TopControllerのアクション
-  # ログインフォームの表示（不要だが残す場合はGET）
-  get "top/main" 
-  
-  # ログイン処理: フォームからの送信を受けるため POST
-  post 'top/login', as: 'top_login' 
-  
-  # ログアウト処理: セッション破棄のため GET（または DELETE）
-  get "top/logout" 
-  
-  # RESTfulリソース (CRUD機能に必要なルーティングを自動生成)
+
   resources :users
   resources :tweets
-
-  # いいね機能: 作成(POST)と削除(DELETE)のみに限定
   resources :likes, only: [:create, :destroy]
-
-  # --- ここから下のRails自動生成部分はそのまま残します ---
+  resources :profiles, only: [:new, :create, :show, :edit, :update]
   get "up" => "rails/health#show", as: :rails_health_check
+
 end

@@ -1,0 +1,21 @@
+<h2>プロフィール作成</h2>
+
+<% if flash[:alert].present? %>
+  <p style="color: red;"><%= flash[:alert] %></p>
+<% end %>
+
+<%= form_with model: @profile, local: true do |f| %>
+  <div>
+    <%= f.label :introduction, "自己紹介" %>
+    <%= f.text_area :introduction, rows: 5, placeholder: "自己紹介文を入力してください" %>
+  </div>
+  <div>
+    <%= f.label :location, "拠点" %>
+    <%= f.text_field :location, placeholder: "例: 東京都" %>
+  </div>
+  <div>
+    <%= f.submit "プロフィールを登録" %>
+  </div>
+<% end %>
+
+<%= link_to 'キャンセル', root_path %>

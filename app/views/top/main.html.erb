@@ -1,20 +1,34 @@
-<% if session[:login_uid] %>
-  <h2>新しいツイート</h2>
-  <%= form_with model: Tweet.new, url: tweets_path, local: true do |f| %>
-    <div>
-      <%= f.text_area :message, placeholder: "いまどうしてる？", rows: 3 %>
-    </div>
-    <div>
-      <%= f.submit "ツイートする" %>
-    </div>
+<div style="background-color: #f0f0f0; padding: 10px; margin-bottom: 20px;">
+  <% if logged_in? %> <%# ログインしている場合 %>
+    <p>
+      ログイン中のユーザー: <strong><%= current_user.uid %></strong>
+      <% if current_user.profile.present? %>
+        <%= link_to 'プロフィールを見る', profile_path(current_user.profile) %> |
+        <%= link_to 'プロフィールを編集', edit_profile_path(current_user.profile) %>
+      <% else %>
+        <%= link_to 'プロフィールを作成', new_profile_path %>
+      <% end %>
+      | <%= link_to 'ログアウト', top_logout_path %>
+    </p>
+
+    <h2>新しいツイート</h2>
+    <%= form_with model: Tweet.new, url: tweets_path, local: true do |f| %>
+      <div>
+        <%= f.text_area :message, placeholder: "いまどうしてる？", rows: 3 %>
+      </div>
+      <div>
+        <%= f.submit "ツイートする" %>
+      </div>
+    <% end %>
+
+  <% else %> <%# ログインしていない場合 %>
+    <p>ログインしていません。</p>
+    <p>
+      <%= link_to 'ログインはこちら', top_login_form_path %> |
+      <%= link_to '新規登録はこちら', new_user_path %>
+    </p>
   <% end %>
-  
-  <p><%= link_to 'ログアウト', top_logout_path %></p>
-<% else %>
-  <h2>ログインまたはユーザー登録</h2>
-  <%# ログインフォームや登録リンクを配置 %>
-  <%# render 'top/login_form' など %>
-<% end %>
+</div>
 
 <hr>
 
@@ -25,15 +39,20 @@
     <%= tweet.message %>
     (いいね: <%= tweet.likes.count %>件)
     
-    <% if session[:login_uid] %>
+    <% if logged_in? %> <%# ログイン時のみいいねボタンを表示 %>
       <%# いいねリンク %>
-      <%= link_to 'いいね', likes_path(tweet_id: tweet.id), data: { turbo_method: :post } %>
+      <% if current_user.like_tweets.exclude?(tweet) %>
+        <%= link_to 'いいね', likes_path(tweet_id: tweet.id), data: { turbo_method: :post } %>
+      <% end %>
       
       <%# いいね削除リンク %>
-      <% like = tweet.likes.find_by(user_id: User.find_by(uid: session[:login_uid]).id) %>
-<% if like %>
-  <%= link_to 'いいね削除', like_path(like), data: { turbo_method: :delete } %>
-<% end %>
+      <% like = tweet.likes.find_by(user_id: current_user.id) %>
+      <% if like %>
+        <%= link_to 'いいね削除', like_path(like), data: { turbo_method: :delete } %>
+      <% end %>
     <% end %>
+
+    <%# ツイート削除リンク (ログイン状態に関わらず常に表示) %>
+    <%= link_to '削除', tweet_path(tweet), data: { turbo_method: :delete, turbo_confirm: '本当にこのツイートを削除しますか？' }, style: 'color: red;' %>
   </p>
 <% end %>
