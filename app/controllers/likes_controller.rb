@@ -1,32 +1,29 @@
 class LikesController < ApplicationController
-  # いいね！の追加 (POST /likes)
+  # いいね！の追加 (POST /tweets/:tweet_id/likes)
   def create
-    # ログインユーザーはセッションから取得
-    user = User.find_by(uid: session[:login_uid])
-    
-    # いいね！対象のツイートはパラメータから取得
-    tweet = Tweet.find(params[:tweet_id])
+    # params[:tweet_id] は既にルーティングによって渡される
+    tweet = Tweet.find(params[:tweet_id]) 
 
-    # 多:多の関連付けを利用してLikeレコードを生成
-    # user.like_tweets << tweet は、Like.create(user_id: user.id, tweet_id: tweet.id) と同じ
-    user.like_tweets << tweet 
-    
+    unless tweet.liked?(current_user)
+      tweet.like(current_user)
+    end
+
     redirect_to root_path
   end
 
-  # いいね！の削除 (DELETE /likes/:id)
+  # いいね！の削除 (DELETE /tweets/:tweet_id/likes)
   def destroy
-    like = Like.find_by(id: params[:id])
+    # ルーティングの変更により、params[:tweet_id]でツイートIDを取得
+    tweet = Tweet.find(params[:tweet_id]) 
 
-    if like
-      # 2. 認証なしでLikeレコードを削除 (演習の簡易仕様)
-      like.destroy
+    if tweet.liked?(current_user)
+      tweet.unlike(current_user)
       flash[:notice] = "いいね！を取り消しました。"
     else
-      # Likeレコードが見つからなかった場合
-      flash[:alert] = "削除対象のいいね！が見つかりませんでした。"
+      # ここは通常発生しないが、安全のため残す
+      flash[:alert] = "いいね！が見つかりませんでした。" 
     end
-    
+
     redirect_to root_path
   end
 end

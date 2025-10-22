@@ -1,6 +1,19 @@
 <% if flash[:alert].present? %>
 <%= flash[:alert] %>
-<% end %> <%= form_with model: @user, url: users_path, local: true, class: "max-w-md mx-auto p-6 bg-white shadow-md rounded-lg" do |f| %>
+<% end %>
+
+<% if @user.present? && @user.errors.any? %>
+  <div style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 15px;">
+    <h3><%= @user.errors.count %>件のエラーがあります。</h3>
+    <ul>
+      <% @user.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: @user, url: users_path, local: true, class: "max-w-md mx-auto p-6 bg-white shadow-md rounded-lg" do |f| %>
 <%= f.label :uid, "ユーザーID", class: "block text-gray-700 text-sm font-bold mb-2" %> <%= f.text_field :uid, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
 <%= f.label :password, "パスワード", class: "block text-gray-700 text-sm font-bold mb-2" %> <%= f.password_field :password, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" %>
 <%= f.label :password_confirmation, "パスワード（確認）", class: "block text-gray-700 text-sm font-bold mb-2" %> <%= f.password_field :password_confirmation, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" %>

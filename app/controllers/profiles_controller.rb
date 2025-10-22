@@ -56,7 +56,7 @@ class ProfilesController < ApplicationController
 
   # ログインしているかを確認する
   def authenticate_user
-    unless session[:login_uid]
+    unless current_user.present? 
       redirect_to root_path, alert: "ログインしてください。"
     end
   end

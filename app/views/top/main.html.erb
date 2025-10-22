@@ -1,5 +1,5 @@
 <div style="background-color: #f0f0f0; padding: 10px; margin-bottom: 20px;">
-  <% if logged_in? %> <%# ログインしている場合 %>
+  <% if logged_in? %> <%# ログインしている場合 %>
     <p>
       ログイン中のユーザー: <strong><%= current_user.uid %></strong>
       <% if current_user.profile.present? %>
@@ -21,38 +21,36 @@
       </div>
     <% end %>
 
-  <% else %> <%# ログインしていない場合 %>
-    <p>ログインしていません。</p>
-    <p>
-      <%= link_to 'ログインはこちら', top_login_form_path %> |
-      <%= link_to '新規登録はこちら', new_user_path %>
-    </p>
-  <% end %>
+  <% else %> <%# ログインしていない場合 %>
+    <p>ログインしていません。</p>
+    <p>
+      <%= link_to 'ログインはこちら', top_login_form_path %> |
+      <%= link_to '新規登録はこちら', new_user_path %>
+    </p>
+  <% end %>
 </div>
 
 <hr>
 
 <h2>ツイート一覧</h2>
 <% @tweets.each do |tweet| %>
-  <p>
-    <strong><%= tweet.user&.uid || '削除済みユーザー' %>:</strong>
-    <%= tweet.message %>
-    (いいね: <%= tweet.likes.count %>件)
-    
-    <% if logged_in? %> <%# ログイン時のみいいねボタンを表示 %>
-      <%# いいねリンク %>
-      <% if current_user.like_tweets.exclude?(tweet) %>
-        <%= link_to 'いいね', likes_path(tweet_id: tweet.id), data: { turbo_method: :post } %>
-      <% end %>
+  <p>
+    <strong><%= tweet.user&.uid || '削除済みユーザー' %>:</strong>
+    <%= tweet.message %>
+    (いいね: <%= tweet.likes.count %>件)
+    
+    <% if logged_in? %> <%# ログイン時のみいいねボタンを表示 %>
       
-      <%# いいね削除リンク %>
-      <% like = tweet.likes.find_by(user_id: current_user.id) %>
-      <% if like %>
-        <%= link_to 'いいね削除', like_path(like), data: { turbo_method: :delete } %>
-      <% end %>
-    <% end %>
+      <%# モデルの liked? メソッドを使ってチェックし、リンクを一つにまとめる %>
+      <% if tweet.liked?(current_user) %>
+                <%= link_to 'いいね削除', tweet_likes_path(tweet), data: { turbo_method: :delete } %>
+      <% else %>
+                <%= link_to 'いいね', tweet_likes_path(tweet), data: { turbo_method: :post } %>
+      <% end %>
 
-    <%# ツイート削除リンク (ログイン状態に関わらず常に表示) %>
-    <%= link_to '削除', tweet_path(tweet), data: { turbo_method: :delete, turbo_confirm: '本当にこのツイートを削除しますか？' }, style: 'color: red;' %>
-  </p>
+    <% end %>
+
+    <%# ツイート削除リンク %>
+    <%= link_to '削除', tweet_path(tweet), data: { turbo_method: :delete, turbo_confirm: '本当にこのツイートを削除しますか？' }, style: 'color: red;' %>
+  </p>
 <% end %>
